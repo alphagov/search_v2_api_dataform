@@ -1,0 +1,6 @@
+defaultProject: search-api-v2-infrastructure
+defaultLocation: europe-west2
+defaultDataset: dataform
+defaultAssertionDataset: dataform_assertions
+dataformCoreVersion: 3.0.0
+
