@@ -1,0 +1,60 @@
+config {
+    type: "incremental",
+    database: "search-v2-api-staging",
+    bigquery: {
+        partitionBy: "PARTITIONTIME",
+        requirePartitionFilter: true
+    },
+    schema: "search_api",
+    name: "view-item-external-link"
+}
+
+MERGE INTO
+  `analytics_events_vertex.view-item-external-link-event` T
+USING
+  (
+  SELECT
+    TIMESTAMP_TRUNC(TIMESTAMP_MICROS(ga.event_timestamp),DAY) AS _PARTITIONTIME,
+    'view-item' AS eventType,
+    ga.user_pseudo_id AS userPseudoId,
+    FORMAT_TIMESTAMP("%FT%TZ",TIMESTAMP_MICROS(ga.event_timestamp)) AS eventTime,
+    (CASE
+        WHEN ( SELECT value.string_value FROM UNNEST(items), UNNEST(item_params) WHERE KEY = 'item_content_id') IS NOT NULL THEN [STRUCT(( SELECT value.string_value FROM UNNEST(items), UNNEST(item_params) WHERE KEY = 'item_content_id') AS id, CAST(NULL AS string) AS name)]
+    END
+      ) AS documents,
+  FROM
+    `ga4-analytics-352613.analytics_330577055.events_{source_date}` ga
+  WHERE
+    ga.event_name='select_item'
+    AND (
+    SELECT
+      value.string_value
+    FROM
+      UNNEST(event_params)
+    WHERE
+      KEY = 'outbound') = "true"
+    AND (
+    SELECT
+      value.string_value
+    FROM
+      UNNEST(items),
+      UNNEST(item_params)
+    WHERE
+      KEY = 'item_content_id') IS NOT NULL) S
+ON
+  T._PARTITIONTIME = S._PARTITIONTIME
+  AND T.eventType = S.eventType
+  AND T.userPseudoId = S.userPseudoId
+  AND T.eventTime = S.eventTime
+  AND TO_JSON_STRING(T.documents) = TO_JSON_STRING(S.documents)
+  WHEN NOT MATCHED
+  THEN
+INSERT
+  (_PARTITIONTIME,
+    eventType,
+    userPseudoId,
+    eventTime,
+    documents)
+VALUES
+  (_PARTITIONTIME, eventType, userPseudoId, eventTime, documents)
+
