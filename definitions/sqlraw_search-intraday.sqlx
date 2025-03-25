@@ -7,6 +7,7 @@ config {
     },
     schema: "search_api",
     name: "search-intraday"
+}
 
 pre_operations { ["${sqlRaw(`
 
@@ -176,7 +177,6 @@ INSERT
 VALUES
   (_PARTITIONTIME, eventType, userPseudoId, eventTime, searchInfo, FILTER, tagIds, documents)
 `)}`]
-}
 }
 
 js {
