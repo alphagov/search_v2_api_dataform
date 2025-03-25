@@ -9,7 +9,7 @@ config {
     name: "search-intraday"
 }
 
-pre_operations { ["${sqlRaw(`
+pre_operations { 
 
 MERGE INTO
   `analytics_events_vertex.search-intraday-event` T
@@ -176,7 +176,6 @@ INSERT
     documents)
 VALUES
   (_PARTITIONTIME, eventType, userPseudoId, eventTime, searchInfo, FILTER, tagIds, documents)
-`)}`]
 }
 
 js {
