@@ -8,7 +8,7 @@ config {
     schema: "search_api",
     name: "search-intraday"
 
-preOps: ["${sqlRaw(`
+pre_operations { ["${sqlRaw(`
 
 MERGE INTO
   `analytics_events_vertex.search-intraday-event` T
@@ -176,6 +176,7 @@ INSERT
 VALUES
   (_PARTITIONTIME, eventType, userPseudoId, eventTime, searchInfo, FILTER, tagIds, documents)
 `)}`]
+}
 }
 
 js {
