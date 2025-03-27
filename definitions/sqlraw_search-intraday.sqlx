@@ -12,7 +12,7 @@ config {
 pre_operations { 
 
 MERGE INTO
-  `${dataform.projectConfig.vars.project.id}.analytics_events_vertex.search-intraday-event` T
+  `${dataform.projectConfig.vars.project_id}.analytics_events_vertex.search-intraday-event` T
 USING
   (
   WITH
