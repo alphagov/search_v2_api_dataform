@@ -148,4 +148,4 @@ SELECT * FROM (
     WHEN NOT MATCHED THEN
     INSERT (_PARTITIONTIME, eventType, userPseudoId, eventTime, searchInfo, FILTER, tagIds, documents)
     VALUES (_PARTITIONTIME, eventType, userPseudoId, eventTime, searchInfo, FILTER, tagIds, documents)
-);
+)
