@@ -20,7 +20,7 @@ js {
 }
 
 MERGE INTO
-  `${project_id}.analytics_events_vertex.search-intraday-event` T
+  `analytics_events_vertex.search-intraday-event` T
 USING
   (
   WITH
