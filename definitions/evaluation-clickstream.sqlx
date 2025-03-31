@@ -1,5 +1,6 @@
 config {
     type: "incremental",
+    database: "search-v2-api-staging",
     uniqueKey: ["queryEntry"],
     bigquery: {
         partitionBy: "PARTITIONTIME",
