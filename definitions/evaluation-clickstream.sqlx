@@ -1,6 +1,6 @@
 config {
     type: "incremental",
-    uniqueKey: ["queryEntry"]
+    uniqueKey: ["queryEntry"],
     bigquery: {
         partitionBy: "PARTITIONTIME",
         requirePartitionFilter: true
