@@ -2,7 +2,7 @@ config {
     type: "incremental",
     uniqueKey: ["queryEntry"]
     bigquery: {
-        partitionBy: "_PARTITIONTIME",
+        partitionBy: "PARTITIONTIME",
         requirePartitionFilter: true
     },
     schema: "search_api",
