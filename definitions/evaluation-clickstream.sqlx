@@ -5,7 +5,7 @@ config {
         partitionBy: "PARTITIONTIME",
         requirePartitionFilter: true
     },
-    database: "search-v2-api-staging",
+    database: "search-api-v2-staging",
     schema: "automated_evaluation_input",
     name: "evaluation-clickstream"
 }
