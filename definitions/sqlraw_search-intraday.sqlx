@@ -9,18 +9,10 @@ config {
     name: "search-intraday"
 }
 
-js {
-    const getGa4TableDate = () => {
-        const date = new Date();
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${year}${month}${day}`;
-    };
-}
+pre_operations { 
 
 MERGE INTO
-  `analytics_events_vertex.search-intraday-event` T
+  `${dataform.projectConfig.vars.project_id}.analytics_events_vertex.search-intraday-event` T
 USING
   (
   WITH
@@ -184,4 +176,14 @@ INSERT
     documents)
 VALUES
   (_PARTITIONTIME, eventType, userPseudoId, eventTime, searchInfo, FILTER, tagIds, documents)
+}
 
+js {
+    const getGa4TableDate = () => {
+        const date = new Date();
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}${month}${day}`;
+    };
+}
