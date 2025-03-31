@@ -1,12 +1,12 @@
 config {
     type: "incremental",
-    database: "search-v2-api-staging",
     uniqueKey: ["queryEntry"],
     bigquery: {
         partitionBy: "PARTITIONTIME",
         requirePartitionFilter: true
     },
-    schema: "search_api",
+    database: "search-v2-api-staging",
+    schema: "automated_evaluation_input",
     name: "evaluation-clickstream"
 }
 
