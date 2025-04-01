@@ -7,7 +7,8 @@ config {
     },
     database: "search-api-v2-staging",
     schema: "automated_evaluation_input",
-    name: "clickstream"
+    name: "clickstream",
+    disabled: true
 }
 
   WITH 
