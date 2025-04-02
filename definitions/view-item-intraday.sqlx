@@ -1,5 +1,5 @@
 config {
-    type: "incremental",
+    type: "operations",
     bigquery: {
         partitionBy: "PARTITIONTIME",
         requirePartitionFilter: true
