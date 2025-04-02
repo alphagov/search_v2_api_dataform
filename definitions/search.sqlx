@@ -1,16 +1,12 @@
 config {
-    type: "incremental",
+    type: "operations",
     database: "search-v2-api-staging",
-    bigquery: {
-        partitionBy: "PARTITIONTIME",
-        requirePartitionFilter: true
-    },
     schema: "search_api",
     name: "search"
 }
 
 MERGE INTO
-  `analytics_events_vertex.search-event` T
+  `${dataform.projectConfig.vars.project_id}.analytics_events_vertex.search-event` T
 USING
   (
   WITH

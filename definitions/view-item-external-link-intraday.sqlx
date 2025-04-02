@@ -1,10 +1,6 @@
 config {
-    type: "incremental",
+    type: "operations",
     database: "search-v2-api-staging",
-    bigquery: {
-        partitionBy: "PARTITIONTIME",
-        requirePartitionFilter: true
-    },
     schema: "search_api",
     name: "view-item-external-link-intraday"
 }
@@ -20,7 +16,7 @@ js {
 }
 
 MERGE INTO
-  `analytics_events_vertex.view-item-external-link-intraday-event` T
+  `${dataform.projectConfig.vars.project_id}.analytics_events_vertex.view-item-external-link-intraday-event` T
 USING
   (
   SELECT
