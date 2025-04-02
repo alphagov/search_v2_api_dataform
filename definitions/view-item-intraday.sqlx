@@ -19,7 +19,7 @@ js {
 }
 
 MERGE INTO
-  `analytics_events_vertex.view-item-intraday-event` T
+  `${dataform.projectConfig.vars.project_id}.analytics_events_vertex.view-item-intraday-event` T
 USING
   (
   SELECT

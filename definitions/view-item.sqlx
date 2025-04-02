@@ -11,7 +11,7 @@ config {
 }
 
 MERGE INTO
-  `analytics_events_vertex.view-item-event` T
+  `${dataform.projectConfig.vars.project_id}.analytics_events_vertex.view-item-event` T
 USING
   (
   SELECT
