@@ -1,9 +1,5 @@
 config {
     type: "operations",
-    bigquery: {
-        partitionBy: "PARTITIONTIME",
-        requirePartitionFilter: true
-    },
     schema: "search_api",
     name: "view-item-intraday"
 }
