@@ -4,16 +4,6 @@ config {
     name: "view-item-intraday"
 }
 
-js {
-    const getGa4TableDate = () => {
-        const date = new Date();
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${year}${month}${day}`;
-    };
-}
-
 MERGE INTO
   `${dataform.projectConfig.vars.project_id}.analytics_events_vertex.view-item-intraday-event` T
 USING
@@ -28,9 +18,10 @@ USING
     END
       ) AS documents
   FROM
-    `ga4-analytics-352613.analytics_330577055.events_intraday_${getGa4TableDate()}` ga,
+    `ga4-analytics-352613.analytics_330577055.events_intraday_*` ga,
     UNNEST(event_params) AS params
   WHERE
+    _TABLE_SUFFIX BETWEEN FORMAT_DATE('%Y%m%d',DATE_TRUNC(DATE_SUB(CURRENT_DATE(),INTERVAL 0 DAY),DAY)) AND FORMAT_DATE('%Y%m%d',DATE_TRUNC(DATE_SUB(CURRENT_DATE(),INTERVAL 0 DAY),DAY)) AND
     ga.event_name='page_view'
     AND params.key='content_id') S
 ON
