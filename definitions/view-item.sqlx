@@ -20,9 +20,10 @@ USING
     END
       ) AS documents
   FROM
-    `ga4-analytics-352613.analytics_330577055.events_20250303` ga,
+    `ga4-analytics-352613.analytics_330577055.events_*` ga,
     UNNEST(event_params) AS params
   WHERE
+    _TABLE_SUFFIX BETWEEN FORMAT_DATE('%Y%m%d',DATE_TRUNC(DATE_SUB(CURRENT_DATE(),INTERVAL 1 DAY),DAY)) AND FORMAT_DATE('%Y%m%d',DATE_TRUNC(DATE_SUB(CURRENT_DATE(),INTERVAL 1 DAY),DAY)) AND
     ga.event_name='page_view'
     AND params.key='content_id') S
 ON

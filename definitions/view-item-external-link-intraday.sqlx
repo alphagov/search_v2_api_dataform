@@ -29,8 +29,9 @@ USING
     END
       ) AS documents,
   FROM
-    `ga4-analytics-352613.analytics_330577055.events_intraday_${getGa4TableDate()}` ga
+    `ga4-analytics-352613.analytics_330577055.events_intraday_*` ga
   WHERE
+    _TABLE_SUFFIX BETWEEN FORMAT_DATE('%Y%m%d',DATE_TRUNC(DATE_SUB(CURRENT_DATE(),INTERVAL 0 DAY),DAY)) AND FORMAT_DATE('%Y%m%d',DATE_TRUNC(DATE_SUB(CURRENT_DATE(),INTERVAL 0 DAY),DAY)) AND
     ga.event_name='select_item'
     AND (
     SELECT

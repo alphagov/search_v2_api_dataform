@@ -1,0 +1,88 @@
+config {
+    type: "operations",
+    schema: "search_api",
+    name: "clickstream"
+}
+
+MERGE INTO `${dataform.projectConfig.vars.project_id}.automated_evaluation_input.clickstream` T
+USING (
+  WITH 
+  events AS (
+    SELECT
+      ga.user_pseudo_id AS userPseudoId,
+      FORMAT_TIMESTAMP("%FT%TZ",TIMESTAMP_MICROS(ga.event_timestamp)) AS eventTime,
+      item.item_id AS link,
+      item_params.value.string_value as id,
+      (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'search_term') AS searchQuery
+    FROM `ga4-analytics-352613.analytics_330577055.events_*` ga,
+      UNNEST(items) AS item,
+      UNNEST(item.item_params) as item_params
+    WHERE
+      ga.event_name='select_item' AND
+      item.item_list_name='Search' AND
+      (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'search_term') IS NOT NULL AND
+      regexp_extract((SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'page_location'), "order=([a-zA-Z\\\\-]+)" ) ='relevance' AND
+      ARRAY_TO_STRING(regexp_extract_all((SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'page_location'), "((?:level_one_taxon|level_two_taxon|content_purpose_supergroup%5B%5D|public_timestamp%5Bfrom%5D|public_timestamp%5Bto%5D)=(?:%20&%20|[^&])*)" ), "&") ='' AND
+      _TABLE_SUFFIX BETWEEN FORMAT_DATE('%Y%m%d',DATE_TRUNC(DATE_SUB(CURRENT_DATE(),INTERVAL 3 MONTH),MONTH)) AND FORMAT_DATE('%Y%m%d',DATE_TRUNC(CURRENT_DATE(),MONTH))
+  ), 
+  grouped AS (
+    SELECT 
+      MAX(events.searchQuery) AS query,
+      MIN(events.link) AS link,
+      MAX(events.id) AS id,
+      COUNT(*) AS count
+    FROM events
+    GROUP BY CONCAT(events.searchQuery,events.id)
+  ), 
+  filtered AS (
+    SELECT 
+      query,
+      link,
+      count,
+      count/SUM(count)
+        OVER (
+          PARTITION BY query
+          ORDER BY count
+          ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
+        ) AS ratio,
+      SUM(count)
+        OVER (
+          PARTITION BY query
+          ORDER BY count
+          ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
+        ) AS total,
+      id
+    FROM grouped
+  ), 
+  scored AS (
+    SELECT *,
+      CASE 
+        WHEN count>1 AND ratio>0.25 THEN 3
+        WHEN count>1 AND ratio>0.025 THEN 2
+        WHEN count>1 AND ratio>0.0005 THEN 1
+        ELSE 0
+      END AS score,
+    FROM filtered
+    WHERE total>50
+  )
+  SELECT
+    TIMESTAMP_TRUNC((CURRENT_TIMESTAMP()),MONTH) AS _PARTITIONTIME,
+    STRUCT(
+    query,
+    ARRAY_AGG(
+      STRUCT(
+        id AS uri
+      ) ORDER BY count DESC
+    ) AS targets
+    ) AS queryEntry
+  FROM scored
+  WHERE score>2
+  GROUP BY query
+  ORDER BY MAX(total) DESC) S
+ON 
+  T._PARTITIONTIME = S._PARTITIONTIME AND
+  to_json_string(T.queryEntry) = to_json_string(S.queryEntry)
+  WHEN NOT MATCHED
+  THEN
+INSERT (_PARTITIONTIME, queryEntry)
+VALUES (_PARTITIONTIME, queryEntry)

@@ -55,10 +55,11 @@ USING
       MAX(item.item_id),
       item.item_list_index
     FROM
-      `ga4-analytics-352613.analytics_330577055.events_{source_date}` ga,
+      `ga4-analytics-352613.analytics_330577055.events_*` ga,
       UNNEST(items) AS item,
       UNNEST(item.item_params) AS item_params
     WHERE
+      _TABLE_SUFFIX BETWEEN FORMAT_DATE('%Y%m%d',DATE_TRUNC(DATE_SUB(CURRENT_DATE(),INTERVAL 1 DAY),DAY)) AND FORMAT_DATE('%Y%m%d',DATE_TRUNC(DATE_SUB(CURRENT_DATE(),INTERVAL 1 DAY),DAY)) AND
       (
       SELECT
         value.string_value
