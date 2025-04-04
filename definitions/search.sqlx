@@ -5,15 +5,6 @@ config {
     name: "search"
 }
 
-js {
-    const getTablePartitionDate = (interval) => {
-      const date = new Date();
-      date.setDate(date.getDate() - interval);
-      const partitionDate = date.toISOString().split('T')[0];
-      return partitionDate;
-    };
-}
-
 MERGE INTO
   `${dataform.projectConfig.vars.project_id}.analytics_events_vertex.search-event` T
 USING
@@ -64,10 +55,11 @@ USING
       MAX(item.item_id),
       item.item_list_index
     FROM
-      `ga4-analytics-352613.analytics_330577055.events_${getTablePartitionDate(1)}` ga,
+      `ga4-analytics-352613.analytics_330577055.events_*` ga,
       UNNEST(items) AS item,
       UNNEST(item.item_params) AS item_params
     WHERE
+      _TABLE_SUFFIX BETWEEN FORMAT_DATE('%Y%m%d',DATE_TRUNC(DATE_SUB(CURRENT_DATE(),INTERVAL 1 DAY),DAY)) AND FORMAT_DATE('%Y%m%d',DATE_TRUNC(DATE_SUB(CURRENT_DATE(),INTERVAL 1 DAY),DAY)) AND
       (
       SELECT
         value.string_value

@@ -5,15 +5,6 @@ config {
     name: "view-item-external-link"
 }
 
-js {
-    const getTablePartitionDate = (interval) => {
-      const date = new Date();
-      date.setDate(date.getDate() - interval);
-      const partitionDate = date.toISOString().split('T')[0];
-      return partitionDate;
-    };
-}
-
 MERGE INTO
   `${dataform.projectConfig.vars.project_id}.analytics_events_vertex.view-item-external-link-event` T
 USING
@@ -28,8 +19,9 @@ USING
     END
       ) AS documents,
   FROM
-    `ga4-analytics-352613.analytics_330577055.events_${getTablePartitionDate(1)}` ga
+    `ga4-analytics-352613.analytics_330577055.events_*` ga
   WHERE
+    _TABLE_SUFFIX BETWEEN FORMAT_DATE('%Y%m%d',DATE_TRUNC(DATE_SUB(CURRENT_DATE(),INTERVAL 1 DAY),DAY)) AND FORMAT_DATE('%Y%m%d',DATE_TRUNC(DATE_SUB(CURRENT_DATE(),INTERVAL 1 DAY),DAY)) AND
     ga.event_name='select_item'
     AND (
     SELECT
