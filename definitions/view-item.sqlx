@@ -6,6 +6,15 @@ config {
 
 }
 
+js {
+    const getTablePartitionDate = (interval) => {
+      const date = new Date();
+      date.setDate(date.getDate() - interval);
+      const partitionDate = date.toISOString().split('T')[0];
+      return partitionDate;
+    };
+}
+
 MERGE INTO
   `${dataform.projectConfig.vars.project_id}.analytics_events_vertex.view-item-event` T
 USING
@@ -20,7 +29,7 @@ USING
     END
       ) AS documents
   FROM
-    `ga4-analytics-352613.analytics_330577055.events_20250303` ga,
+    `ga4-analytics-352613.analytics_330577055.events_${getTablePartitionDate(1)}` ga,
     UNNEST(event_params) AS params
   WHERE
     ga.event_name='page_view'
