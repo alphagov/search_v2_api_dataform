@@ -71,12 +71,13 @@ USING (
     query,
     ARRAY_AGG(
       STRUCT(
-        id AS uri
+        id AS uri,
+        score
       ) ORDER BY count DESC
     ) AS targets
     ) AS queryEntry
   FROM scored
-  WHERE score>2
+  WHERE score>0
   GROUP BY query
   ORDER BY MAX(total) DESC) S
 ON 
