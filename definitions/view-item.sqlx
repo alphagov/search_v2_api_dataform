@@ -13,7 +13,10 @@ USING
   SELECT
     TIMESTAMP_TRUNC(TIMESTAMP_MICROS(ga.event_timestamp),DAY) AS _PARTITIONTIME,
     'view-item' AS eventType,
-    ga.user_pseudo_id AS userPseudoId,
+    CASE ga.user_pseudo_id
+      WHEN 'false' THEN CONCAT(ga.user_pseudo_id,(SELECT SAFE_CAST(value.int_value AS STRING) FROM UNNEST(event_params) WHERE key = 'ga_session_id'))
+      ELSE ga.user_pseudo_id
+    END AS userPseudoId,
     FORMAT_TIMESTAMP("%FT%TZ",TIMESTAMP_MICROS(ga.event_timestamp)) AS eventTime,
     (CASE
         WHEN params.value.string_value IS NOT NULL THEN [STRUCT(params.value.string_value AS id, CAST(NULL AS string) AS name)]
