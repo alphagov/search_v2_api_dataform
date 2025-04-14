@@ -9,7 +9,10 @@ USING (
   WITH 
   events AS (
     SELECT
-      ga.user_pseudo_id AS userPseudoId,
+      CASE ga.user_pseudo_id
+        WHEN 'false' THEN CONCAT(ga.user_pseudo_id,(SELECT SAFE_CAST(value.int_value AS STRING) FROM UNNEST(event_params) WHERE key = 'ga_session_id'))
+        ELSE ga.user_pseudo_id
+      END AS userPseudoId,
       FORMAT_TIMESTAMP("%FT%TZ",TIMESTAMP_MICROS(ga.event_timestamp)) AS eventTime,
       item.item_id AS link,
       item_params.value.string_value as id,
