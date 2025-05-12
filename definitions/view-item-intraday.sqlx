@@ -1,7 +1,8 @@
 config {
     type: "operations",
     schema: "search_api",
-    name: "view-item-intraday"
+    name: "view-item-intraday",
+    tags: ["view-item-intraday"]
 }
 
 MERGE INTO
