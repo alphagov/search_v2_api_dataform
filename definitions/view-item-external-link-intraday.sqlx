@@ -2,7 +2,8 @@ config {
     type: "operations",
     database: "search-v2-api-staging",
     schema: "search_api",
-    name: "view-item-external-link-intraday"
+    name: "view-item-external-link-intraday",
+    tags: ["view-item-external-link-intraday"]
 }
 
 js {
