@@ -1,7 +1,8 @@
 config {
     type: "operations",
     schema: "search_api",
-    name: "clickstream"
+    name: "clickstream",
+    tags: ["search-monthly"]
 }
 
 MERGE INTO `${dataform.projectConfig.vars.project_id}.automated_evaluation_input.clickstream` T
