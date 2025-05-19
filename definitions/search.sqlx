@@ -1,9 +1,8 @@
 config {
     type: "operations",
-    database: "search-v2-api-staging",
     schema: "search_api",
     name: "search",
-    tags: ["search"]
+    tags: ["search-daily"]
 }
 
 MERGE INTO
