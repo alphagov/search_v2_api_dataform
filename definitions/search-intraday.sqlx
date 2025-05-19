@@ -1,6 +1,5 @@
 config {
     type: "operations",
-    database: "search-v2-api-staging",
     schema: "search_api",
     name: "search-intraday",
     tags: ["search-intraday"]
