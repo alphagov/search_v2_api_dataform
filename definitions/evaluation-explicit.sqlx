@@ -1,0 +1,36 @@
+config {
+    type: "operations",
+    schema: "search_api",
+    name: "explicit",
+    tags: ["search-monthly"]
+}
+
+MERGE INTO `automated_evaluation_input.explicit` T
+USING (
+  WITH 
+  source AS (
+    SELECT *
+    FROM `automated_evaluation_input.explicit_source`
+  )
+  SELECT
+    TIMESTAMP_TRUNC((CURRENT_TIMESTAMP()),MONTH) AS _PARTITIONTIME,
+    STRUCT(
+    query,
+    ARRAY_AGG(
+      STRUCT(
+        path AS uri,
+        score
+      ) ORDER BY score DESC
+    ) AS targets
+    ) AS queryEntry
+  FROM source
+  GROUP BY query
+  LIMIT 1000
+  ) S
+ON 
+  T._PARTITIONTIME = S._PARTITIONTIME AND
+  to_json_string(T.queryEntry) = to_json_string(S.queryEntry)
+  WHEN NOT MATCHED
+  THEN
+INSERT (_PARTITIONTIME, queryEntry)
+VALUES (_PARTITIONTIME, queryEntry)
