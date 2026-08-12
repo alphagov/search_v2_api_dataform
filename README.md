@@ -27,6 +27,9 @@ This repo follows an unusual workflow to accommodate the integration, staging an
 
  This is part of the Dataform set up, and means that we can't easily run a typical CI/CD workflow, where we have the flexibility in integration to test any feature branch and also deploy from main. This workflow tries to follow a typical workflow as closely as possible, whilst allowing us to test changes on integration.
 
+> INFO: Dataform supports scheduled releases via the repeat "schedule frequency" setting in the [release configuration](https://docs.cloud.google.com/dataform/docs/configure-compilation#create-release-configuration), and push-triggered releases via [Cloud Build triggers](https://docs.cloud.google.com/dataform/docs/schedule-runs#cloud-build-triggers).
+> However, these features are not used for the automatic deployment of the code in this repository from integration to main, as there is no automated test suite.
+
 ### Step 1: Develop and test a new feature
 
 1.1.  Make changes in a feature branch.
