@@ -1,0 +1,26 @@
+name: 'Code scan'
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - ".git**"
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'The branch, tag or SHA to checkout'
+        default: main
+        type: string
+
+jobs:
+  codeql-sast:
+    name: CodeQL SAST scan
+    uses: alphagov/govuk-infrastructure/.github/workflows/codeql-analysis.yml@main
+    permissions:
+      security-events: write
+
+  dependency-review:
+    name: Dependency Review scan
+    uses: alphagov/govuk-infrastructure/.github/workflows/dependency-review.yml@main
